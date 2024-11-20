@@ -120,7 +120,8 @@ int main(int argc, char* argv[]) {
         vector<string> lastLineSplit = splitString(lastLine);
         int recenttimestamp = stoi(lastLineSplit[0]);
         if(timestamp <= recenttimestamp) {
-            cerr << "Timestamp is not valid" << endl;
+            // cerr << "Timestamp is not valid" << endl;
+            cerr << "Invalid" << endl;
             return 255;
         }
     }
@@ -216,13 +217,15 @@ int main(int argc, char* argv[]) {
         if(roomNo==-1) {
             for(vector<string> t: gallery) {
                 if(t[0]==name && t[1]==guest) {
-                    cerr << "Invalid: "+ name +" Already in Gallery" << endl;
+                    // cerr << "Invalid: "+ name +" Already in Gallery" << endl;
+                    cerr << "Invalid" << endl;
                     return 255;
                 }
             }
             for(vector<string> t: room) {
                 if(t[0]==name && t[1]==guest) {
-                    cerr << "Invalid: "+ name +" Already in a Room" << endl;
+                    // cerr << "Invalid: "+ name +" Already in a Room" << endl;
+                    cerr << "Invalid" << endl;
                     return 255;
                 }
             }
@@ -253,9 +256,11 @@ int main(int argc, char* argv[]) {
                     }
                 }
                 if(inAnyRoom) {
-                    cerr << "Invalid: " << name + " need to leave room " + presentRoomNo + " first" << endl;
+                    // cerr << "Invalid: " << name + " need to leave room " + presentRoomNo + " first" << endl;
+                    cerr << "Invalid" << endl;
                 } else {
-                    cerr << "Invalid: " << name + " need to enter gallery first" << endl;
+                    // cerr << "Invalid: " << name + " need to enter gallery first" << endl;
+                    cerr << "Invalid" << endl;
                 }
                 return 255;
             } else {
@@ -295,9 +300,11 @@ int main(int argc, char* argv[]) {
                     }
                 }
                 if(inAnyRoom) {
-                    cerr << "Invalid: In a room" << endl;
+                    // cerr << "Invalid: In a room" << endl;
+                    cerr << "Invalid" << endl;
                 } else {
-                    cerr << "Invalid: Not in gallery or a room" << endl;
+                    // cerr << "Invalid: Not in gallery or a room" << endl;
+                    cerr << "Invalid" << endl;
                 }
                 return 255;
             }
@@ -318,7 +325,8 @@ int main(int argc, char* argv[]) {
             if(inGivenRoom) {
                 gallery.push_back({name, guest});
             } else {
-                cerr << "Invalid: Not in given room" << endl;
+                // cerr << "Invalid: Not in given room" << endl;
+                cerr << "Invalid" << endl;
                 return 255;
             }
         }
