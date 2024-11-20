@@ -162,7 +162,14 @@ int main(int argc, char* argv[]) {
             if(t[1]=="1") guests += t[0] + ",";
             else employees += t[0] + ",";
         }
-        if(employees=="" && guests=="") cout << "No one in gallery\n";
+        for(vector<string> t: room) {
+            if(t[1]=="0") {
+                employees += t[0]+",";
+            } else {
+                guests += t[0]+",";
+            }
+        }
+        if(employees=="" && guests=="") cout << "No Employees or Guests in the gallery\n";
         else cout << employees << endl << guests << endl;
 
         // cout << "Rooms(Name:Guest/Employee:RoomNumber)"<< endl;
