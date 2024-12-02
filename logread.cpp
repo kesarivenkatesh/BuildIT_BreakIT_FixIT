@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     string validToken = "";
     // check if encrypted file exists, if yes decrypt it.
     if (std::ifstream(logfileNameEncrypted)) {
-        std::cout << "File already exists " << logfileNameEncrypted << " " << logfileName << std::endl;
+        // std::cout << "File already exists " << logfileNameEncrypted << " " << logfileName << std::endl;
         string command = "openssl enc -aes-256-cbc -pbkdf2 -d -in "+ logfileNameEncrypted +" -out "+ logfileName +" -pass file:mypassword.txt";
         system(command.c_str());
         command = "rm " + logfileNameEncrypted;
