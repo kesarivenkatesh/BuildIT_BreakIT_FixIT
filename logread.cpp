@@ -6,6 +6,7 @@
 #include <algorithm> 
 #include <unordered_map>
 #include <unistd.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -21,6 +22,13 @@ vector<string> splitString(const string& str, char delimiter = ' ') {
     return tokens;
 }
 
+void encryptLogFile(string logfileName, string logFileNameEncrypted) {
+    string command = "openssl enc -aes-256-cbc -pbkdf2 -in "+ logfileName +" -out "+ logFileNameEncrypted +" -pass file:mypassword.txt";
+    system(command.c_str());
+    command = "rm " + logfileName;
+    system(command.c_str());
+}
+
 int main(int argc, char* argv[]) {
     // take cmd line args
     int opt;
@@ -31,6 +39,7 @@ int main(int argc, char* argv[]) {
     string logfileName = "";
     bool state = false;
     bool allRoomsByGE = false;
+    string logfileNameEncrypted = "";
 
     while((opt = getopt(argc, argv, "K:SRE:G:T:I:")) != -1) {
         switch(opt) {
@@ -50,10 +59,20 @@ int main(int argc, char* argv[]) {
 
     if(optind < argc) {
         logfileName = argv[argc-1];
+        logfileNameEncrypted = logfileName+"_encrypted.txt";
+        logfileName += ".txt";
     }
 
     // get valid token from log file(1st line)
     string validToken = "";
+    // check if encrypted file exists, if yes decrypt it.
+    if (std::ifstream(logfileNameEncrypted)) {
+        std::cout << "File already exists " << logfileNameEncrypted << " " << logfileName << std::endl;
+        string command = "openssl enc -aes-256-cbc -pbkdf2 -d -in "+ logfileNameEncrypted +" -out "+ logfileName +" -pass file:mypassword.txt";
+        system(command.c_str());
+        command = "rm " + logfileNameEncrypted;
+        system(command.c_str());
+    }
     ifstream file(logfileName);
 
     if (!file.is_open()) {
@@ -192,4 +211,7 @@ int main(int argc, char* argv[]) {
     } else if(allRoomsByGE) {
         cout << allRoomsVisited << endl;
     }
+
+    encryptLogFile(logfileName, logfileNameEncrypted);
+    return 0;
 }

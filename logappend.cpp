@@ -5,6 +5,7 @@
 #include <sstream>
 #include <algorithm> 
 #include <unistd.h>
+#include <cstdlib>
 
 using namespace std;
 
@@ -29,6 +30,13 @@ vector<string> splitString(const string& str, char delimiter = ' ') {
     return tokens;
 }
 
+void encryptLogFile(string logfileName, string logFileNameEncrypted) {
+    string command = "openssl enc -aes-256-cbc -pbkdf2 -in "+ logfileName +" -out "+ logFileNameEncrypted +" -pass file:mypassword.txt";
+    system(command.c_str());
+    command = "rm " + logfileName;
+    system(command.c_str());
+}
+
 
 int main(int argc, char* argv[]) {
     // take cmd line args
@@ -43,6 +51,7 @@ int main(int argc, char* argv[]) {
     bool roomGiven = false;
     int roomNo = -1;
     string logfileName = "";
+    string logfileNameEncrypted = "";
 
     while((opt = getopt(argc, argv, "T:K:E:G:ALR:")) != -1) {
         switch(opt) {
@@ -62,10 +71,20 @@ int main(int argc, char* argv[]) {
 
     if(optind < argc) {
         logfileName = argv[argc-1];
+        logfileNameEncrypted = logfileName+"_encrypted.txt";
+        logfileName += ".txt";
     }
 
     // get valid token from log file(1st line)
     string validToken = "";
+    // check if encrypted file exists, if yes decrypt it.
+    if (std::ifstream(logfileNameEncrypted)) {
+        std::cout << "File already exists " << logfileNameEncrypted << " " << logfileName << std::endl;
+        string command = "openssl enc -aes-256-cbc -pbkdf2 -d -in "+ logfileNameEncrypted +" -out "+ logfileName +" -pass file:mypassword.txt";
+        system(command.c_str());
+        command = "rm " + logfileNameEncrypted;
+        system(command.c_str());
+    }
     ifstream file(logfileName);
 
     if (!file.is_open()) {
@@ -95,6 +114,7 @@ int main(int argc, char* argv[]) {
 
     if(invalid) {
         cerr << "Unsupported " << errmsg << endl;
+        encryptLogFile(logfileName, logfileNameEncrypted);
         return 255;
     }
 
@@ -122,6 +142,7 @@ int main(int argc, char* argv[]) {
         if(timestamp <= recenttimestamp) {
             // cerr << "Timestamp is not valid" << endl;
             cerr << "Invalid" << endl;
+            encryptLogFile(logfileName, logfileNameEncrypted);
             return 255;
         }
     }
@@ -219,6 +240,7 @@ int main(int argc, char* argv[]) {
                 if(t[0]==name && t[1]==guest) {
                     // cerr << "Invalid: "+ name +" Already in Gallery" << endl;
                     cerr << "Invalid" << endl;
+                    encryptLogFile(logfileName, logfileNameEncrypted);
                     return 255;
                 }
             }
@@ -226,6 +248,7 @@ int main(int argc, char* argv[]) {
                 if(t[0]==name && t[1]==guest) {
                     // cerr << "Invalid: "+ name +" Already in a Room" << endl;
                     cerr << "Invalid" << endl;
+                    encryptLogFile(logfileName, logfileNameEncrypted);
                     return 255;
                 }
             }
@@ -262,6 +285,7 @@ int main(int argc, char* argv[]) {
                     // cerr << "Invalid: " << name + " need to enter gallery first" << endl;
                     cerr << "Invalid" << endl;
                 }
+                encryptLogFile(logfileName, logfileNameEncrypted);
                 return 255;
             } else {
                 // in the gallery, now can enter the room
@@ -306,6 +330,7 @@ int main(int argc, char* argv[]) {
                     // cerr << "Invalid: Not in gallery or a room" << endl;
                     cerr << "Invalid" << endl;
                 }
+                encryptLogFile(logfileName, logfileNameEncrypted);
                 return 255;
             }
         }
@@ -327,6 +352,7 @@ int main(int argc, char* argv[]) {
             } else {
                 // cerr << "Invalid: Not in given room" << endl;
                 cerr << "Invalid" << endl;
+                encryptLogFile(logfileName, logfileNameEncrypted);
                 return 255;
             }
         }
@@ -348,5 +374,9 @@ int main(int argc, char* argv[]) {
         if(t[1]=="1") cout << t[0] << " Guest " << t[2] << endl;
         else cout << t[0] << " Employee " << t[2] << endl;
     }
+
+    // again encrypt after append
+    encryptLogFile(logfileName, logfileNameEncrypted);
+
     return 0;
 }
