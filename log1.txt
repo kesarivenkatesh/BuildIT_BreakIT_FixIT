@@ -1,11 +1,1 @@
 secret
-1 A Fred -1 0
-2 A Jill -1 1
-3 A Fred 1 0
-4 A Jill 1 1
-5 L Fred 1 0
-6 A Fred 2 0
-7 L Fred 2 0
-8 A Fred 3 0
-9 L Fred 3 0
-10 A Fred 1 0
